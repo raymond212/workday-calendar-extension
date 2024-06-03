@@ -219,27 +219,20 @@ chrome.storage.local.get('drawerOpen', function (data) {
 // });
 
 let shouldAutoFill: boolean = true;
+let isAutofillEnabled: boolean = true;
 
-function tryAutoFill () {
-  const okButton = document.querySelector('[data-automation-id="wd-CommandButton_uic_okButton"]');
+function autoFill () {
   const dropDowns = document.querySelectorAll('[data-automation-id="multiselectInputContainer"]');
-  if (shouldAutoFill && document.title == "Find Course Sections - Workday" && okButton) {
-    console.log('Auto filling');
-    (dropDowns[0] as HTMLElement).click(); // open time dropdown
-    waitAndClick('[data-automation-id="promptOption"][data-automation-label="Future Periods"]'); // select future periods
-    waitAndClick('[data-automation-label="2024-25 UBC-V Academic Year"]'); // select UBC V
-    waitAndClick('[data-automation-id="promptOption"][data-automation-label="2024-25 Winter Term 1 (UBC-V) (2024-09-03-2024-12-06)"]'); // select Winter Term 1
-    waitAndClick('[data-automation-id="promptOption"][data-automation-label="2024-25 Winter Term 2 (UBC-V) (2025-01-06-2025-04-08)"]'); // select Winter Term 2
-    (dropDowns[1] as HTMLElement).click(); // open level dropdown
-    waitAndClick('[data-automation-label="Undergraduate"]'); // select Undergraduate
-    shouldAutoFill = false;
-  } else {
-    console.log('Not auto filling');
-  }
+  console.log('Auto filling...');
+  (dropDowns[0] as HTMLElement).click(); // open time dropdown
+  waitAndClick('[data-automation-label="Future Periods"]'); // select future periods
+  waitAndClick('[data-automation-label="2024-25 UBC-V Academic Year"]'); // select UBC V
+  waitAndClick('[data-automation-label="2024-25 Winter Term 1 (UBC-V) (2024-09-03-2024-12-06)"]'); // select Winter Term 1
+  waitAndClick('[data-automation-label="2024-25 Winter Term 2 (UBC-V) (2025-01-06-2025-04-08)"]'); // select Winter Term 2
+  (dropDowns[1] as HTMLElement).click(); // open level dropdown
+  waitAndClick('[data-automation-label="Undergraduate"]'); // select Undergraduate
+  console.log("Auto fill completed");
 }
-
-// Check for the element every 1 second
-setInterval(tryAutoFill, 1000);
 
 function waitForElm(selector: string) {
   return new Promise(resolve => {
@@ -264,3 +257,22 @@ function waitAndClick(selector: string): void {
     (element as HTMLElement).click();
   });
 }
+
+const autoFillChecker = () => {
+  if (localStorage.getItem('autofillEnabled') === 'true') {
+    const checkAndAutoFill = () => {
+      console.log("Checking");
+      const okButton = document.querySelector('[data-automation-id="wd-CommandButton_uic_okButton"]');
+      if (shouldAutoFill && document.title === "Find Course Sections - Workday" && okButton) {
+        autoFill();
+        shouldAutoFill = false;
+        clearInterval(intervalId); // Stop checking
+      }
+    };
+    const intervalId = setInterval(checkAndAutoFill, 1000);
+  } else {
+    console.log("Auto fill disabled");
+  }
+};
+
+autoFillChecker();
