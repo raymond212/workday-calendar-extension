@@ -218,8 +218,7 @@ chrome.storage.local.get('drawerOpen', function (data) {
 });
 // });
 
-let shouldAutoFill: boolean = true;
-let isAutofillEnabled: boolean = true;
+let hasAlreadyAutoFilled: boolean = false;
 
 function autoFill () {
   const dropDowns = document.querySelectorAll('[data-automation-id="multiselectInputContainer"]');
@@ -261,11 +260,11 @@ function waitAndClick(selector: string): void {
 const autoFillChecker = () => {
   if (localStorage.getItem('autofillEnabled') === 'true') {
     const checkAndAutoFill = () => {
-      console.log("Checking");
+      console.log("Checking for course selection popup");
       const okButton = document.querySelector('[data-automation-id="wd-CommandButton_uic_okButton"]');
-      if (shouldAutoFill && document.title === "Find Course Sections - Workday" && okButton) {
+      if (!hasAlreadyAutoFilled && document.title === "Find Course Sections - Workday" && okButton) {
         autoFill();
-        shouldAutoFill = false;
+        hasAlreadyAutoFilled = true;
         clearInterval(intervalId); // Stop checking
       }
     };
