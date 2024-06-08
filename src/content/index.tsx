@@ -223,12 +223,12 @@ chrome.storage.local.get('drawerOpen', function (data) {
 });
 // });
 
-let hasAlreadyAutoFilledCourseSections: boolean = false;
-let hasAlreadyAutoFilledSavedSchedules: boolean = false;
+let hasAlreadyAutofilledCourseSections: boolean = false;
+let hasAlreadyAutofilledSavedSchedules: boolean = false;
 
-function autoFillCourseSections () {
+function autofillCourseSections () {
   const dropDowns = document.querySelectorAll('[data-automation-id="multiselectInputContainer"]');
-  console.log('Auto filling course sections...');
+  console.log('Autofilling course sections...');
   (dropDowns[0] as HTMLElement).click(); // open start date dropdown
   waitAndClick('[data-automation-label="Future Periods"]'); // select future periods
   waitAndClick('[data-automation-label="2024-25 UBC-V Academic Year"]'); // select UBC V
@@ -236,16 +236,19 @@ function autoFillCourseSections () {
   waitAndClick('[data-automation-label="2024-25 Winter Term 2 (UBC-V) (2025-01-06-2025-04-08)"]'); // select Winter Term 2
   (dropDowns[1] as HTMLElement).click(); // open level dropdown
   waitAndClick('[data-automation-label="Undergraduate"]'); // select Undergraduate
-  console.log("Auto fill completed");
+  console.log("Autofill course sections completed");
 }
 
-function autoFillSavedSchedules () {
-  console.log('Auto filling saved schedules...');
+function autofillSavedSchedules () {
+  console.log('Autofilling saved schedules...');
   waitAndClick('[data-automation-id="multiselectInputContainer"]'); // open start date dropdown
   waitAndClick('[data-automation-label="All"]'); // select all
-  waitAndClick('[data-automation-label="2024-25 Winter Term 1 (UBC-V)(2024-09-03-2024-12-06)"]'); // select Winter Term 1
-  waitAndClick('[data-automation-label="2024-25 Winter Term 2 (UBC-V)(2025-01-06-2025-04-08)"]'); // select Winter Term 2
-  console.log('Auto fill completed')
+  if (localStorage.getItem('autofillSavedScheduleTerm') === '2') {
+    waitAndClick('[data-automation-label="2024-25 Winter Term 2 (UBC-V)(2025-01-06-2025-04-08)"]'); // select Winter Term 2
+  } else {
+    waitAndClick('[data-automation-label="2024-25 Winter Term 1 (UBC-V)(2024-09-03-2024-12-06)"]'); // select Winter Term 1
+  }
+  console.log('Autofill saved schedules completed')
 }
 
 function waitForElm(selector: string) {
@@ -272,39 +275,37 @@ function waitAndClick(selector: string): void {
   });
 }
 
-const autoFillCourseSectionsChecker = () => {
+const autofillCourseSectionsChecker = () => {
   if (localStorage.getItem('autofillEnabled') === 'true') {
-    const checkAndAutoFill = () => {
-      console.log("Checking for course selection popup");
+    const checkAndAutofill = () => {
       const okButton = document.querySelector('[data-automation-id="wd-CommandButton_uic_okButton"]');
-      if (!hasAlreadyAutoFilledCourseSections && document.title === "Find Course Sections - Workday" && okButton) {
-        autoFillCourseSections();
-        hasAlreadyAutoFilledCourseSections = true;
+      if (!hasAlreadyAutofilledCourseSections && document.title === "Find Course Sections - Workday" && okButton) {
+        autofillCourseSections();
+        hasAlreadyAutofilledCourseSections = true;
         clearInterval(intervalId); // Stop checking
       }
     };
-    const intervalId = setInterval(checkAndAutoFill, 1000);
+    const intervalId = setInterval(checkAndAutofill, 1000);
   } else {
-    console.log("Auto fill disabled");
+    console.log("Autofill disabled");
   }
 };
 
-const autoFillSavedSchedulesChecker = () => {
+const autofillSavedSchedulesChecker = () => {
   if (localStorage.getItem('autofillEnabled') === 'true') {
-    const checkAndAutoFill = () => {
-      console.log("Checking for saved schedules popup");
+    const checkAndAutofill = () => {
       const okButton = document.querySelector('[data-automation-id="wd-CommandButton_uic_okButton"]');
-      if (!hasAlreadyAutoFilledSavedSchedules && document.title === 'View My Saved Schedules - Workday' && okButton) {
-        autoFillSavedSchedules();
-        hasAlreadyAutoFilledSavedSchedules = true;
+      if (!hasAlreadyAutofilledSavedSchedules && document.title === 'View My Saved Schedules - Workday' && okButton) {
+        autofillSavedSchedules();
+        hasAlreadyAutofilledSavedSchedules = true;
         clearInterval(intervalId); // Stop checking
       }
     };
-    const intervalId = setInterval(checkAndAutoFill, 1000);
+    const intervalId = setInterval(checkAndAutofill, 1000);
   } else {
-    console.log("Auto fill disabled");
+    console.log("Autofill disabled");
   }
 };
 
-autoFillCourseSectionsChecker();
-autoFillSavedSchedulesChecker();
+autofillCourseSectionsChecker();
+autofillSavedSchedulesChecker();
