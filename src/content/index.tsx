@@ -234,6 +234,10 @@ function autofillCourseSections () {
   waitAndClick('[data-automation-label="2024-25 Winter Term 2 (UBC-V) (2025-01-06-2025-04-08)"]'); // select Winter Term 2
   (dropDowns[1] as HTMLElement).click(); // open level dropdown
   waitAndClick('[data-automation-label="Undergraduate"]'); // select Undergraduate
+
+  const closeDropDownButtons = document.querySelectorAll('[data-automation-id="promptSearchButton"]');
+  setTimeout(() => (closeDropDownButtons[0] as HTMLElement).click(), 1000);
+  setTimeout(() => (closeDropDownButtons[1] as HTMLElement).click(), 1000);
   console.log("Autofill course sections completed");
 }
 

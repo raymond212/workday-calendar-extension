@@ -52,7 +52,7 @@ const Tools = ({setInfoPopupMessage}:IProps) => {
             <div><input type="checkbox" checked={autofillEnabled} onChange={handleAutofillChange} /></div>                
             <div>Enable Autofill</div>
           </div>
-          <div className='ToolItemInfoButton' onClick={() => setInfoPopupMessage("Autofills Find Course Sections and Saved Schedules")}>
+          <div className='ToolItemInfoButton' onClick={() => setInfoPopupMessage("Autofills the menus for \"Find Course Sections\" and \"Saved Schedules\"")}>
             <QuestionIcon size={16} color='black' />
           </div>
         </div>
@@ -62,9 +62,9 @@ const Tools = ({setInfoPopupMessage}:IProps) => {
               <option value="1">1</option>
               <option value="2">2</option>
             </select>
-            <label htmlFor="term">Autofill Term for Saved Schedules</label>
+            <label htmlFor="term">Term for Autofilling Saved Schedules Menu</label>
           </div>
-          <div className='ToolItemInfoButton' onClick={() => setInfoPopupMessage("The term to autofill for Saved Schedules")}>
+          <div className='ToolItemInfoButton' onClick={() => setInfoPopupMessage("The term to autofill in the \"View My Saved Schedules\" menu")}>
             <QuestionIcon size={16} color='black' />
           </div>
         </div>
