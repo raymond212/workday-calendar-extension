@@ -219,10 +219,6 @@ chrome.storage.local.get('drawerOpen', function (data) {
 
   ReactDOM.render(<App />, container);
 });
-// });
-
-let hasAlreadyAutofilledCourseSections: boolean = false;
-let hasAlreadyAutofilledSavedSchedules: boolean = false;
 
 function autofillCourseSections () {
   console.log('Autofilling course sections...');
@@ -287,9 +283,8 @@ const autofillCourseSectionsChecker = () => {
   if (localStorage.getItem('autofillEnabled') === 'true') {
     const checkAndAutofill = () => {
       const okButton = document.querySelector('[data-automation-id="wd-CommandButton_uic_okButton"]');
-      if (!hasAlreadyAutofilledCourseSections && document.title === "Find Course Sections - Workday" && okButton) {
+      if (document.title === "Find Course Sections - Workday" && okButton) {
         autofillCourseSections();
-        hasAlreadyAutofilledCourseSections = true;
         clearInterval(intervalId); // Stop checking
       }
     };
@@ -303,9 +298,8 @@ const autofillSavedSchedulesChecker = () => {
   if (localStorage.getItem('autofillEnabled') === 'true') {
     const checkAndAutofill = () => {
       const okButton = document.querySelector('[data-automation-id="wd-CommandButton_uic_okButton"]');
-      if (!hasAlreadyAutofilledSavedSchedules && document.title === 'View My Saved Schedules - Workday' && okButton) {
+      if (document.title === 'View My Saved Schedules - Workday' && okButton) {
         autofillSavedSchedules();
-        hasAlreadyAutofilledSavedSchedules = true;
         clearInterval(intervalId); // Stop checking
       }
     };
