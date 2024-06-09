@@ -225,43 +225,49 @@ let hasAlreadyAutofilledCourseSections: boolean = false;
 let hasAlreadyAutofilledSavedSchedules: boolean = false;
 
 function autofillCourseSections () {
-  const dropDowns = document.querySelectorAll('[data-automation-id="multiselectInputContainer"]');
   console.log('Autofilling course sections...');
-  (dropDowns[0] as HTMLElement).click(); // open start date dropdown
-  waitAndClick('[data-automation-label="Future Periods"]'); // select future periods
-  waitAndClick('[data-automation-label="2024-25 UBC-V Academic Year"]'); // select UBC V
-  waitAndClick('[data-automation-label="2024-25 Winter Term 1 (UBC-V) (2024-09-03-2024-12-06)"]'); // select Winter Term 1
-  waitAndClick('[data-automation-label="2024-25 Winter Term 2 (UBC-V) (2025-01-06-2025-04-08)"]'); // select Winter Term 2
-  (dropDowns[1] as HTMLElement).click(); // open level dropdown
-  waitAndClick('[data-automation-label="Undergraduate"]'); // select Undergraduate
 
-  const closeDropDownButtons = document.querySelectorAll('[data-automation-id="promptSearchButton"]');
-  setTimeout(() => (closeDropDownButtons[0] as HTMLElement).click(), 1000);
-  setTimeout(() => (closeDropDownButtons[1] as HTMLElement).click(), 1000);
+  waitAndClick('[data-automation-id="multiselectInputContainer"]', 0) // open start date dropdown
+  .then(() => waitAndClick('[data-automation-label="Future Periods"]')) // select future periods
+  .then(() => waitAndClick('[data-automation-label="2024-25 UBC-V Academic Year"]')) // select UBC V
+  .then(() => waitAndClick('[data-automation-label="2024-25 Winter Term 1 (UBC-V) (2024-09-03-2024-12-06)"]')) // select Winter Term 1
+  .then(() => waitAndClick('[data-automation-label="2024-25 Winter Term 2 (UBC-V) (2025-01-06-2025-04-08)"]')) // select Winter Term 2
+  .then(() => waitAndClick('[data-automation-id="promptSearchButton"]', 0)); // close start date dropdown
+
+  waitAndClick('[data-automation-id="multiselectInputContainer"]', 1) // open level dropdown
+  .then(() => waitAndClick('[data-automation-label="Undergraduate"]')) // select Undergraduate
+  .then(() => waitAndClick('[data-automation-id="promptSearchButton"]', 1)); // close level dropdown
+
   console.log("Autofill course sections completed");
 }
 
 function autofillSavedSchedules () {
   console.log('Autofilling saved schedules...');
-  waitAndClick('[data-automation-id="multiselectInputContainer"]'); // open start date dropdown
-  waitAndClick('[data-automation-label="All"]'); // select all
-  if (localStorage.getItem('autofillSavedScheduleTerm') === '2') {
-    waitAndClick('[data-automation-label="2024-25 Winter Term 2 (UBC-V)(2025-01-06-2025-04-08)"]'); // select Winter Term 2
-  } else {
-    waitAndClick('[data-automation-label="2024-25 Winter Term 1 (UBC-V)(2024-09-03-2024-12-06)"]'); // select Winter Term 1
-  }
-  console.log('Autofill saved schedules completed')
+
+  waitAndClick('[data-automation-id="multiselectInputContainer"]') // open start date dropdown
+  .then(() => waitAndClick('[data-automation-label="All"]')) // select all
+  .then(() => {
+    if (localStorage.getItem('autofillSavedScheduleTerm') === '2') {
+      waitAndClick('[data-automation-label="2024-25 Winter Term 2 (UBC-V)(2025-01-06-2025-04-08)"]'); // select Winter Term 2
+    } else {
+      waitAndClick('[data-automation-label="2024-25 Winter Term 1 (UBC-V)(2024-09-03-2024-12-06)"]'); // select Winter Term 1
+    }
+  });
+
+  console.log('Autofill saved schedules completed');
 }
 
-function waitForElm(selector: string) {
+function waitForElm(selector: string, index: number) {
   return new Promise(resolve => {
-    if (document.querySelector(selector)) {
-      return resolve(document.querySelector(selector));
+    const existingElements = document.querySelectorAll(selector);
+    if (existingElements.length > index) {
+      return resolve(existingElements[index]);
     }
     const observer = new MutationObserver(mutations => {
-      if (document.querySelector(selector)) {
+      const existingElements = document.querySelectorAll(selector);
+      if (existingElements.length > index) {
         observer.disconnect();
-        resolve(document.querySelector(selector));
+        resolve(existingElements[index]);
       }
     });
     observer.observe(document.body, {
@@ -271,8 +277,8 @@ function waitForElm(selector: string) {
   });
 }
 
-function waitAndClick(selector: string): void {
-  waitForElm(selector).then((element) => {
+function waitAndClick(selector: string, index: number = 0): Promise<void> {
+  return waitForElm(selector, index).then((element) => {
     (element as HTMLElement).click();
   });
 }
